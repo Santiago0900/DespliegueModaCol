@@ -1,16 +1,14 @@
 from django.core.management.base import BaseCommand
-from clientes_app.models import RolModel, UsuarioModel
 from django.contrib.auth.hashers import make_password
-
+from clientes_app.models import RolModel, UsuarioModel
 
 class Command(BaseCommand):
-    help = "Crea datos iniciales del sistema (roles y usuarios)"
 
     def handle(self, *args, **kwargs):
 
-        # -------------------
-        # ROLES
-        # -------------------
+        # ======================
+        # ROLES (IDEMPOTENTE)
+        # ======================
         roles = ['ADMIN', 'OPERATIVO', 'FLUJO_DE_CAJA']
 
         for r in roles:
@@ -19,22 +17,20 @@ class Command(BaseCommand):
                 defaults={'activo': True}
             )
 
-        self.stdout.write(self.style.SUCCESS("✔ Roles creados"))
-
-        # -------------------
-        # USUARIOS
-        # -------------------
-        usuarios = [
-            ('admin1@modacol.com', 'admin123', 'ADMIN', 'Admin'),
-            ('admin2@modacol.com', 'admin123', 'OPERATIVO', 'Operativo'),
-            ('admin3@modacol.com', 'admin123', 'FLUJO_DE_CAJA', 'Flujo'),
+        # ======================
+        # USUARIOS (SIN DUPLICAR)
+        # ======================
+        creds = [
+            ('admin1@modacol.com', '12345', 'ADMIN', 'Admin'),
+            ('admin2@modacol.com', '12345', 'OPERATIVO', 'Operativo'),
+            ('admin3@modacol.com', '12345', 'FLUJO_DE_CAJA', 'Flujo'),
         ]
 
-        for email, password, rol_name, nombre in usuarios:
+        for email, password, rol_name, nombre in creds:
 
             rol = RolModel.objects.get(tipo=rol_name)
 
-            usuario, created = UsuarioModel.objects.get_or_create(
+            user, created = UsuarioModel.objects.get_or_create(
                 correo=email,
                 defaults={
                     'nombre': nombre,
@@ -44,11 +40,14 @@ class Command(BaseCommand):
                 }
             )
 
+            # si ya existe → lo actualiza (NO duplica)
             if not created:
-                usuario.password_hash = make_password(password)
-                usuario.activo = True
-                usuario.save()
+                user.nombre = nombre
+                user.password_hash = make_password(password)
+                user.rol = rol
+                user.activo = True
+                user.save()
 
-            self.stdout.write(f"✔ Usuario listo: {email}")
-
-        self.stdout.write(self.style.SUCCESS("✔ Seed completado correctamente"))
+            self.stdout.write(self.style.SUCCESS(
+                f"✔ {email} listo"
+            ))
