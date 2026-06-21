@@ -42,6 +42,10 @@ def login_view(request):
                 request.session["usuario_rol_tipo"] = usuario.rol_tipo
                 request.session.set_expiry(60 * 60 * 8)  # 8 horas
 
+                if usuario.rol_tipo == "FLUJO_DE_CAJA":
+                    return redirect("flujo_caja_list")
+                if usuario.rol_tipo == "OPERATIVO":
+                    return redirect("ventas_list")
                 return redirect("dashboard")
 
             error = resultado["message"]
