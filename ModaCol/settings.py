@@ -141,6 +141,9 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
+if not os.path.exists(BASE_DIR / "staticfiles"):
+    os.makedirs(BASE_DIR / "staticfiles")
+
 CORS_ALLOW_ALL_ORIGINS = True
 
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
