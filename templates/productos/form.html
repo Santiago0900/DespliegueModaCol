@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}{% if producto_id %}Editar Producto{% else %}Nuevo Producto{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-2">
+    <div class="d-flex align-items-center mb-3">
+        <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+             style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+            <i class="bi bi-box-seam-fill fs-5"></i>
+        </div>
+        <div>
+            <h5 class="mb-1">{% if producto_id %}Editar Producto{% else %}Nuevo Producto{% endif %}</h5>
+            <small class="text-muted">Gestión de productos</small>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-2">
+            <form action="/productos/save" method="post" class="row g-2">
+                {% csrf_token %}
+                {{ form.id }}
+                {{ form.activo }}
+
+                {% if form.non_field_errors %}
+                <div class="col-12">
+                    <div class="alert alert-danger py-2 mb-2">{{ form.non_field_errors }}</div>
+                </div>
+                {% endif %}
+
+                <div class="col-md-3">
+                    <label class="form-label mb-1 small">Fecha</label>
+                    {{ form.fecha }}
+                    {% if form.fecha.errors %}<div class="text-danger small mt-1">{{ form.fecha.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label mb-1 small">Nombre</label>
+                    {{ form.nombre }}
+                    {% if form.nombre.errors %}<div class="text-danger small mt-1">{{ form.nombre.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label mb-1 small">Descripción</label>
+                    {{ form.descripcion }}
+                    {% if form.descripcion.errors %}<div class="text-danger small mt-1">{{ form.descripcion.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label mb-1 small">Precio Unitario</label>
+                    {{ form.precio_unitario }}
+                    {% if form.precio_unitario.errors %}<div class="text-danger small mt-1">{{ form.precio_unitario.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label mb-1 small">Cantidad</label>
+                    {{ form.cantidad }}
+                    {% if form.cantidad.errors %}<div class="text-danger small mt-1">{{ form.cantidad.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label mb-1 small">Proveedor</label>
+                    {{ form.proveedor_id }}
+                    {% if form.proveedor_id.errors %}<div class="text-danger small mt-1">{{ form.proveedor_id.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label mb-1 small">Categoría</label>
+                    {{ form.categoria_id }}
+                    {% if form.categoria_id.errors %}<div class="text-danger small mt-1">{{ form.categoria_id.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end mt-3 pt-2 border-top">
+                    <a href="/productos" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success btn-sm">
+                        <i class="bi bi-check-circle me-1"></i>Guardar Producto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

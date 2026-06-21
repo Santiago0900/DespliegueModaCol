@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load custom_tags %}
+
+{% block title %}
+{% if rol_id %}Editar Rol - Modacol{% else %}Nuevo Rol - Modacol{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-3">
+    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+         style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+        <i class="bi bi-shield-lock-fill fs-4"></i>
+    </div>
+    <div>
+        <h6 class="mb-2">{% if rol_id %}Editar Rol{% else %}Nuevo Rol{% endif %}</h6>
+        <small class="text-muted mb-0">
+            {% if rol_id %}Modificar permisos del rol existente{% else %}Configurar un nuevo perfil de acceso{% endif %}
+        </small>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-custom">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Configuración de Rol</h6>
+            </div>
+            <div class="card-body">
+                <form action="/roles/save" method="post" id="rolForm">
+                    {% csrf_token %}
+                    {{ form.id }}
+                    {{ form.activo }}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold"><i class="bi bi-person-badge me-2"></i>Nombre del Rol</label>
+                        {{ form.tipo }}
+                        {% if form.tipo.errors %}
+                        <div class="text-danger small mt-1">{{ form.tipo.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <h6 class="mb-3 mt-4 text-primary"><i class="bi bi-check2-all me-2"></i>Permisos por Módulo</h6>
+
+                    <div class="row g-3" id="accordionPermisos">
+                        {% for modulo in modulos %}
+                        <div class="col-md-6 col-xl-4"> <div class="card h-100 border-0 shadow-sm-custom p-2 bg-light-soft">
+                            <div class="d-flex align-items-center justify-content-between px-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box-mini me-2 d-flex align-items-center justify-content-center">
+                                        {% if modulo.codigo == "DASHBOARD" %}<i class="bi bi-speedometer2"></i>
+                                        {% elif modulo.codigo == "CATEGORIAS" %}<i class="bi bi-tags-fill"></i>
+                                        {% elif modulo.codigo == "USUARIOS" %}<i class="bi bi-person-badge-fill"></i>
+                                        {% elif modulo.codigo == "CLIENTES" %}<i class="bi bi-people-fill"></i>
+                                        {% elif modulo.codigo == "COMPRAS" %}<i class="bi bi-cart-check-fill"></i>
+                                        {% elif modulo.codigo == "FLUJO_CAJA" %}<i class="bi bi-cash-coin"></i>
+                                        {% elif modulo.codigo == "PRODUCTOS" %}<i class="bi bi-box-seam-fill"></i>
+                                        {% elif modulo.codigo == "PROVEEDORES" %}<i class="bi bi-truck-front-fill"></i>
+                                        {% elif modulo.codigo == "ROLES" %}<i class="bi bi-shield-lock-fill"></i>
+                                        {% elif modulo.codigo == "VENTAS" %}<i class="bi bi-receipt-cutoff"></i>
+                                        {% elif modulo.codigo == "MENSAJES" %}<i class="bi bi-chat-dots-fill"></i>
+                                        {% else %}<i class="bi bi-layers-fill"></i>{% endif %}
+                                    </div>
+                                    <span class="small fw-bold text-dark">{{ modulo.nombre }}</span>
+                                </div>
+
+                                <div class="form-check form-switch custom-modacol-switch m-0">
+                                    {% with p=permisos|get_item:modulo.id %}
+                                    <input class="form-check-input" type="checkbox"
+                                           name="modulo_{{ modulo.id }}_full"
+                                           id="full_{{ modulo.id }}"
+                                           value="on"
+                                           {% if p %}checked{% endif %}>
+                                    {% endwith %}
+
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-3 pt-4 mt-4 border-top">
+                        <button type="submit" class="btn btn-success px-4" id="btnGuardar">
+                            <i class="bi bi-check-circle me-2"></i>Guardar Rol
+                        </button>
+                        <a href="/roles" class="btn btn-outline-secondary px-4">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-custom mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Importante</h6>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">
+                    <i class="bi bi-info-circle-fill text-primary me-1"></i>
+                    Los permisos definen qué acciones puede realizar el usuario en cada módulo del sistema.
+                </p>
+                <hr>
+                <div class="small">
+                    <strong>ADMIN:</strong> Recomendado otorgar todos los permisos.<br>
+                    <strong>OPERATIVO:</strong> Limitar a creación y edición, evitando eliminación.
+                </div>
+            </div>
+        </div>
+
+        {% if rol_id %}
+        <div class="card border-0 shadow-custom bg-light">
+            <div class="card-body text-center py-4">
+                <div class="text-gradient small mb-1">ID Único de Rol</div>
+                <h4 class="fw-bold mb-0">#{{ rol_id }}</h4>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Lógica para el botón de "Guardar"
+        const form = document.getElementById('rolForm');
+        const btn = document.getElementById('btnGuardar');
+        form.addEventListener('submit', () => {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Guardando...';
+        });
+
+        // Lógica para Seleccionar Todo por módulo
+        const masterSwitches = document.querySelectorAll('.btn-check-all');
+        masterSwitches.forEach(sw => {
+            sw.addEventListener('change', function() {
+                const moduloId = this.dataset.modulo;
+                const checks = document.querySelectorAll('.check-' + moduloId);
+                checks.forEach(c => c.checked = this.checked);
+            });
+        });
+    });
+</script>
+
+<style>
+    .icon-box-mini {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    /* Fondo muy suave para las tarjetitas */
+    .bg-light-soft {
+        background-color: #f8f9fa;
+        border: 1px solid #edf0f2 !important;
+    }
+
+    /* Quitar el azul de Bootstrap y poner el color de Modacol */
+    .custom-modacol-switch .form-check-input:checked {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    /* Sombra más sutil */
+    .shadow-sm-custom {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04) !important;
+    }
+
+    /* Ajustar el tamaño del switch para que no se vea gigante */
+    .custom-modacol-switch .form-check-input {
+        width: 2.2em;
+        height: 1.1em;
+        cursor: pointer;
+    }
+
+    /* Quitar el margen excesivo de la columna principal */
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #fff;
+        color: var(--primary-color);
+        box-shadow: none;
+    }
+
+    /* Animación suave */
+    .accordion-item {
+        transition: all 0.3s ease;
+    }
+
+    .accordion-item:hover {
+        border-color: var(--primary-color) !important;
+    }
+
+    .btn-check-all:checked {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
+    }
+</style>
+{% endblock %}

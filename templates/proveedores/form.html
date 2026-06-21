@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}{% if proveedor_id %}Editar Proveedor{% else %}Nuevo Proveedor{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-2">
+    <div class="d-flex align-items-center mb-3">
+        <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+             style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+            <i class="bi bi-truck-front-fill fs-5"></i>
+        </div>
+        <div>
+            <h5 class="mb-1">{% if proveedor_id %}Editar Proveedor{% else %}Nuevo Proveedor{% endif %}</h5>
+            <small class="text-muted">Gestión de proveedores</small>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-2">
+            <form action="/proveedores/save" method="post" class="row g-2">
+                {% csrf_token %}
+                {{ form.id }}
+                {{ form.activo }}
+
+                {% if form.non_field_errors %}
+                <div class="col-12">
+                    <div class="alert alert-danger py-2 mb-2">{{ form.non_field_errors }}</div>
+                </div>
+                {% endif %}
+
+                <div class="col-md-6">
+                    <label class="form-label mb-1 small">Razón Social</label>
+                    {{ form.razon_social }}
+                    {% if form.razon_social.errors %}<div class="text-danger small mt-1">{{ form.razon_social.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label mb-1 small">Identificación</label>
+                    {{ form.identificacion }}
+                    {% if form.identificacion.errors %}<div class="text-danger small mt-1">{{ form.identificacion.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label mb-1 small">Dirección</label>
+                    {{ form.direccion }}
+                    {% if form.direccion.errors %}<div class="text-danger small mt-1">{{ form.direccion.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label mb-1 small">Correo</label>
+                    {{ form.correo }}
+                    {% if form.correo.errors %}<div class="text-danger small mt-1">{{ form.correo.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label mb-1 small">Contacto</label>
+                    {{ form.contacto }}
+                    {% if form.contacto.errors %}<div class="text-danger small mt-1">{{ form.contacto.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end mt-3 pt-2 border-top">
+                    <a href="/proveedores" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-success btn-sm">
+                        <i class="bi bi-check-circle me-1"></i>Guardar Proveedor
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<style>
+    .input-custom {
+        height: 42px;
+        border-radius: 12px;
+        border: 1.5px solid #dfe3ea;
+        padding: 0.65rem 0.85rem;
+        transition: all 0.2s ease;
+    }
+
+    .input-custom:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.10);
+    }
+</style>

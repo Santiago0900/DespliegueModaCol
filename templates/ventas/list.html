@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Ventas{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h5 class="mb-0"><i class="bi bi-cart-fill me-1"></i>Ventas</h5>
+        </div>
+        <a href="/ventas/new" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus"></i>Nueva
+        </a>
+    </div>
+
+    <div class="card border-0 bg-transparent mb-2">
+        <div class="card-body py-1">
+            <form action="/ventas" method="get">
+                <div class="row g-2">
+                    <div class="col-12 col-md-3">
+                        <input type="date" class="form-control form-control-sm" name="fechaInicio" value="{{ request.GET.fechaInicio|default:'' }}">
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <input type="date" class="form-control form-control-sm" name="fechaFin" value="{{ request.GET.fechaFin|default:'' }}">
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <select class="form-select form-select-sm" name="clienteId">
+                            <option value="">Todos los clientes</option>
+                            {% for cliente in clientes %}
+                            <option value="{{ cliente.id }}" {% if request.GET.clienteId == cliente.id|stringformat:"s" %}selected{% endif %}>{{ cliente.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <div class="d-flex gap-1">
+                            <button type="submit" class="btn btn-primary btn-sm flex-fill"><i class="bi bi-search"></i></button>
+                            <a href="/ventas" class="btn btn-secondary btn-sm flex-fill"><i class="bi bi-x-circle"></i></a>
+                            <a href="/reportes?tipo=ventas&formato=excel" class="btn btn-success btn-sm flex-fill"><i class="bi bi-file-earmark-excel"></i></a>
+                            <a href="/reportes?tipo=ventas&formato=pdf" class="btn btn-danger btn-sm flex-fill"><i class="bi bi-file-earmark-pdf"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Usuario</th>
+                        <th>Productos</th>
+                        <th>Total</th>
+                        <th class="text-center">Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for venta in ventas %}
+                    <tr class="{% if not venta.activo %}table-secondary{% endif %}">
+                        <td>{{ venta.id }}</td>
+                        <td>{{ venta.fecha_venta }}</td>
+                        <td>{{ venta.cliente_nombre }}</td>
+                        <td>{{ venta.usuario_nombre }}</td>
+                        <td>
+                            <small>
+                                {% for d in venta.detalles %}
+                                {{ d.producto_nombre }} (x{{ d.cantidad }}){% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </small>
+                        </td>
+                        <td>{{ venta.total }}</td>
+                        <td class="text-center">
+                            {% if venta.activo %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Activo</span>
+                            {% else %}
+                            <span class="badge bg-secondary"><i class="bi bi-x-circle me-1"></i>Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="/ventas/edit/{{ venta.id }}" class="btn btn-primary btn-sm me-1">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+
+                            {% if venta.activo %}
+                            <a href="/ventas/delete/{{ venta.id }}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('¿Inactivar venta?');">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                            {% else %}
+                            <a href="/ventas/activar/{{ venta.id }}" class="btn btn-success btn-sm"
+                               onclick="return confirm('¿Quieres activar esta venta nuevamente?');">
+                                <i class="bi bi-check-circle"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="text-center text-muted">No hay ventas registradas.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

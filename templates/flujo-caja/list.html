@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Flujo de Caja - Modacol{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-2">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">
+            <i class="bi bi-cash-stack"></i> Flujo de Caja
+        </h5>
+
+        <div class="d-flex gap-2">
+            <a href="/reportes?tipo=flujo-caja&formato=excel&desde={{ request.GET.desde|default:'' }}&hasta={{ request.GET.hasta|default:'' }}&tipo_mov={{ request.GET.tipo_mov|default:'' }}"
+               class="btn btn-success btn-sm">
+                <i class="bi bi-file-earmark-excel me-1"></i>Excel
+            </a>
+
+            <a href="/reportes?tipo=flujo-caja&formato=pdf&desde={{ request.GET.desde|default:'' }}&hasta={{ request.GET.hasta|default:'' }}&tipo_mov={{ request.GET.tipo_mov|default:'' }}"
+               class="btn btn-danger btn-sm">
+                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-2 mb-3">
+        <div class="col-md-3 col-6">
+            <div class="card dashboard-card-primary text-white h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 opacity-90">Saldo Actual</h6>
+                            <h4 class="mb-0 fw-bold">${{ saldo }}</h4>
+                        </div>
+                        <div class="dashboard-icon">
+                            <i class="bi bi-wallet2 fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="card dashboard-card-success text-white h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 opacity-90">Total Ingresos</h6>
+                            <h4 class="mb-0 fw-bold">${{ ingresos }}</h4>
+                            <small class="opacity-75">{{ conteoIngresos }} transacciones</small>
+                        </div>
+                        <div class="dashboard-icon">
+                            <i class="bi bi-arrow-up-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="card dashboard-card-warning text-white h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 opacity-90">Total Egresos</h6>
+                            <h4 class="mb-0 fw-bold">${{ egresos }}</h4>
+                            <small class="opacity-75">{{ conteoEgresos }} transacciones</small>
+                        </div>
+                        <div class="dashboard-icon">
+                            <i class="bi bi-arrow-down-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-6">
+            <div class="card dashboard-card-info text-white h-100">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1 opacity-90">Movimientos</h6>
+                            <h4 class="mb-0 fw-bold">{{ movimientos|length }}</h4>
+                            <small class="opacity-75">
+                                {% if desde and hasta %}
+                                {{ desde }} - {{ hasta }}
+                                {% else %}
+                                Todos
+                                {% endif %}
+                            </small>
+                        </div>
+                        <div class="dashboard-icon">
+                            <i class="bi bi-list-ul fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white;">
+            <h6 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtros de Búsqueda</h6>
+        </div>
+
+        <div class="card-body py-2">
+            <form action="/flujo-caja" method="get">
+                <div class="row g-2">
+                    <div class="col-12 col-md-3">
+                        <label class="form-label mb-0 small">Desde</label>
+                        <input type="date" class="form-control form-control-sm" name="desde" value="{{ desde|default:'' }}">
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <label class="form-label mb-0 small">Hasta</label>
+                        <input type="date" class="form-control form-control-sm" name="hasta" value="{{ hasta|default:'' }}">
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <label class="form-label mb-0 small">Tipo</label>
+                        <select name="tipo" class="form-select form-select-sm">
+                            <option value="">Todos</option>
+                            <option value="INGRESO" {% if tipo == "INGRESO" %}selected{% endif %}>Ingreso</option>
+                            <option value="EGRESO" {% if tipo == "EGRESO" %}selected{% endif %}>Egreso</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-3 d-flex align-items-end">
+                        <div class="d-flex gap-1 w-100">
+                            <button type="submit" class="btn btn-primary btn-sm flex-fill">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <a href="/flujo-caja" class="btn btn-secondary btn-sm flex-fill">
+                                <i class="bi bi-x-circle"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card dashboard-table-card">
+        <div class="card-header dashboard-header">
+            <h6 class="mb-0 text-white"><i class="bi bi-clock-history me-2"></i>Movimientos de Caja</h6>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th class="text-end">Monto</th>
+                        <th>Origen</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for mov in movimientos %}
+                    <tr>
+                        <td>{{ mov.fecha }}</td>
+                        <td>
+                            {% if mov.tipo_movimiento == "INGRESO" %}
+                            <span class="text-success fw-bold">{{ mov.tipo_movimiento }}</span>
+                            {% else %}
+                            <span class="text-danger fw-bold">{{ mov.tipo_movimiento }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ mov.descripcion }}</td>
+                        <td class="text-end">${{ mov.monto }}</td>
+                        <td>
+                            {% if mov.venta_id %}
+                            Venta #{{ mov.venta_id }}
+                            {% elif mov.compra_id %}
+                            Compra #{{ mov.compra_id }}
+                            {% else %}
+                            Manual
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            No hay movimientos registrados
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

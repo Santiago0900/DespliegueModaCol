@@ -1,0 +1,92 @@
+{% load static %}
+
+<nav id="sidebar-wrapper">
+    <div class="sidebar-heading position-relative">
+        <img src="{% static 'images/logo.png' %}" alt="Logo" style="width: 180px; height: auto; margin-bottom: 0.5rem;">
+        <span class="role-badge">{{ user_role|default:"OPERATIVO" }}</span>
+    </div>
+
+    <div class="list-group list-group-flush mt-3">
+
+        <a href="/dashboard" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-speedometer2 me-3"></i>
+            <span>Dashboard</span>
+        </a>
+
+        {% if permisos_modulos.CATEGORIAS %}
+        <a href="/categorias" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-tags-fill me-3"></i>
+            <span>Categorías</span>
+        </a>
+        {% endif %}
+
+        {% if permisos_modulos.USUARIOS %}
+        <a href="/usuarios" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-person-badge-fill me-3"></i>
+            <span>Usuarios</span>
+        </a>
+        {% endif %}
+
+        {% if permisos_modulos.CLIENTES %}
+        <a href="/clientes" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-people-fill me-3"></i>
+            <span>Clientes</span>
+        </a>
+        {% endif %}
+
+        {% if permisos_modulos.COMPRAS %}
+        <a href="/compras" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-cart-check-fill me-3"></i>
+            <span>Compras</span>
+        </a>
+        {% endif %}
+
+        {% if permisos_modulos.FLUJO_CAJA %}
+        <a href="/flujo-caja" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-cash-coin me-3"></i>
+            <span>Flujo de Caja</span>
+        </a>
+        {% endif %}
+
+        {% if permisos_modulos.PRODUCTOS %}
+        <a href="/productos" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-box-seam-fill me-3"></i>
+            <span>Productos</span>
+        </a>
+        {% endif %}
+
+        {% if permisos_modulos.PROVEEDORES %}
+        <a href="/proveedores" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-truck-front-fill me-3"></i>
+            <span>Proveedores</span>
+        </a>
+        {% endif %}
+
+        {% if permisos_modulos.ROLES %}
+        <a href="/roles" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-shield-lock-fill me-3"></i>
+            <span>Roles</span>
+        </a>
+        {% endif %}
+
+        {% if permisos_modulos.VENTAS %}
+        <a href="/ventas" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-receipt-cutoff me-3"></i>
+            <span>Ventas</span>
+        </a>
+        {% endif %}
+
+        <a href="/mensajes" class="list-group-item list-group-item-action bg-transparent sidebar-item">
+            <i class="bi bi-chat-dots-fill me-3"></i>
+            <span>Mensajes</span>
+        </a>
+
+    </div>
+
+    <div class="mt-auto p-3">
+        <a href="/logout" class="btn btn-danger w-100 rounded-pill">
+            <i class="bi bi-box-arrow-right me-2"></i>
+            <span>Cerrar Sesión</span>
+        </a>
+    </div>
+</nav>

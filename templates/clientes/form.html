@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if cliente_id %}Editar Cliente{% else %}Nuevo Cliente{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center mb-3">
+    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+         style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+        <i class="bi bi-person-badge-fill fs-4"></i>
+    </div>
+    <div>
+        <h6 class="mb-2">{% if cliente_id %}Editar Cliente{% else %}Nuevo Cliente{% endif %}</h6>
+        <small class="text-muted mb-0">
+            {% if cliente_id %}Modificar información del cliente{% else %}Registrar un nuevo cliente{% endif %}
+        </small>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-custom">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Información del Cliente
+                </h6>
+            </div>
+            <div class="card-body">
+                <form action="/clientes/save" method="post" id="clienteForm">
+                    {% csrf_token %}
+
+                    {% if cliente_id %}
+                    <input type="hidden" name="id" value="{{ cliente_id }}">
+                    {% endif %}
+
+                    {{ form.activo }}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 mb-3">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="id_empresa" class="form-label">
+                                <i class="bi bi-building me-2"></i>Empresa
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.empresa }}
+                            {% if form.empresa.errors %}
+                            <div class="text-danger small mt-1">{{ form.empresa.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="id_nombre" class="form-label">
+                                <i class="bi bi-person me-2"></i>Nombre
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.nombre }}
+                            {% if form.nombre.errors %}
+                            <div class="text-danger small mt-1">{{ form.nombre.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="id_identificacion" class="form-label">
+                                <i class="bi bi-card-text me-2"></i>Identificación
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.identificacion }}
+                            <small class="form-text text-muted">Solo números</small>
+                            {% if form.identificacion.errors %}
+                            <div class="text-danger small mt-1">{{ form.identificacion.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="id_contacto" class="form-label">
+                                <i class="bi bi-telephone me-2"></i>Contacto
+                            </label>
+                            {{ form.contacto }}
+                            <small class="form-text text-muted">Solo números, entre 7 y 15 dígitos</small>
+                            {% if form.contacto.errors %}
+                            <div class="text-danger small mt-1">{{ form.contacto.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="id_correo" class="form-label">
+                                <i class="bi bi-envelope me-2"></i>Correo
+                            </label>
+                            {{ form.correo }}
+                            {% if form.correo.errors %}
+                            <div class="text-danger small mt-1">{{ form.correo.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 pt-3 mt-4 border-top">
+                        <button type="submit" class="btn btn-success px-4">
+                            <i class="bi bi-check-circle me-2"></i>
+                            {% if cliente_id %}Actualizar Cliente{% else %}Crear Cliente{% endif %}
+                        </button>
+
+                        <a href="/clientes" class="btn btn-outline-secondary px-4">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-custom">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-lightbulb me-2"></i>
+                    Consejos
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-start mb-3">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                         style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--success-color), #45b7aa); color: white; flex-shrink: 0;">
+                        <i class="bi bi-check2"></i>
+                    </div>
+                    <div>
+                        <small class="mb-1 fw-bold">Datos claros</small>
+                        <small class="text-muted d-block">Usa nombres reales y datos correctos para evitar duplicados.</small>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start mb-3">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                         style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--warning-color), #ff9f43); color: white; flex-shrink: 0;">
+                        <i class="bi bi-exclamation"></i>
+                    </div>
+                    <div>
+                        <small class="mb-1 fw-bold">Contacto válido</small>
+                        <small class="text-muted d-block">El teléfono debe tener solo números. Nada de letras infiltradas.</small>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start">
+                    <div class="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                         style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; flex-shrink: 0;">
+                        <i class="bi bi-star"></i>
+                    </div>
+                    <div>
+                        <small class="mb-1 fw-bold">Correo único</small>
+                        <small class="text-muted d-block">Si registras correo, asegúrate de que no esté repetido.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if cliente_id %}
+        <div class="card border-0 shadow-custom mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-hash me-2"></i>
+                    Información
+                </h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                     style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white;">
+                    <i class="bi bi-person-vcard fs-4"></i>
+                </div>
+                <small class="text-gradient">ID del Cliente</small>
+                <h6 class="text-dark fw-bold">{{ cliente_id }}</h6>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('clienteForm');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const empresa = document.getElementById('id_empresa');
+        const nombre = document.getElementById('id_nombre');
+        const identificacion = document.getElementById('id_identificacion');
+        const contacto = document.getElementById('id_contacto');
+
+        if (empresa) empresa.focus();
+
+        function soloNumeros(input) {
+            if (!input) return;
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        }
+
+        soloNumeros(identificacion);
+        soloNumeros(contacto);
+
+        form.addEventListener('submit', function() {
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Guardando...';
+            submitBtn.disabled = true;
+        });
+    });
+</script>
+{% endblock %}
+<style>
+    .input-custom {
+        height: 48px;
+        border-radius: 14px;
+        border: 1.5px solid #dfe3ea;
+        background: #fff;
+        padding: 0.75rem 0.95rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        box-shadow: none;
+    }
+
+    .input-custom::placeholder {
+        color: #98a2b3;
+        font-size: 0.92rem;
+    }
+
+    .input-custom:hover {
+        border-color: #c7cfdb;
+    }
+
+    .input-custom:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.10);
+        background: #fff;
+    }
+
+    .field-label {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #344054;
+        margin-bottom: 0.45rem;
+    }
+
+    .field-help {
+        font-size: 0.78rem;
+        color: #667085;
+        margin-top: 0.35rem;
+        display: block;
+    }
+
+    .field-error {
+        font-size: 0.8rem;
+        margin-top: 0.35rem;
+        color: #d92d20;
+        font-weight: 500;
+    }
+
+    .form-section-card {
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .form-section-card .card-header {
+        background: #fff;
+        border-bottom: 1px solid #eef2f6;
+        padding: 1rem 1.25rem;
+    }
+
+    .form-section-card .card-body {
+        padding: 1.25rem;
+    }
+</style>

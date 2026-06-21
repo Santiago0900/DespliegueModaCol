@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Usuarios - Modacol{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h5 class="mb-0">
+                <i class="bi bi-person-badge-fill me-1"></i>
+                Usuarios
+            </h5>
+        </div>
+        <a href="{% url 'usuarios_new' %}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus"></i>
+            Nuevo
+        </a>
+    </div>
+
+    <div class="card border-0 bg-transparent mb-2">
+        <div class="card-body py-1">
+            <form action="/usuarios" method="get">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control form-control-sm" name="nombre"
+                               value="{{ request.GET.nombre|default:'' }}" placeholder="Buscar por nombre">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control form-control-sm" name="correo"
+                               value="{{ request.GET.correo|default:'' }}" placeholder="Buscar por correo">
+                    </div>
+                    <div class="col-md-2">
+                        <select name="rolId" class="form-select form-select-sm">
+                            <option value="">Todos los roles</option>
+                            {% for rol in roles %}
+                            <option value="{{ rol.id }}" {% if request.GET.rolId == rol.id|stringformat:"s" %}selected{% endif %}>
+                            {{ rol.tipo }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="d-flex gap-1">
+                            <button type="submit" class="btn btn-primary btn-sm flex-fill">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <a href="/usuarios" class="btn btn-secondary btn-sm flex-fill">
+                                <i class="bi bi-x-circle"></i>
+                            </a>
+                            <a href="/reportes?tipo=usuarios&formato=excel" class="btn btn-success btn-sm flex-fill">
+                                <i class="bi bi-file-earmark-excel"></i>
+                            </a>
+                            <a href="/reportes?tipo=usuarios&formato=pdf" class="btn btn-danger btn-sm flex-fill">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-striped table-hover table-sm mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for usuario in usuarios %}
+                    <tr class="{% if not usuario.activo %}table-secondary{% endif %}">
+                        <td>{{ usuario.id }}</td>
+                        <td>{{ usuario.nombre }}</td>
+                        <td>{{ usuario.correo }}</td>
+                        <td>
+                            <span class="badge bg-info text-dark">{{ usuario.rol_tipo }}</span>
+                        </td>
+                        <td class="text-center">
+                            {% if usuario.activo %}
+                            <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>Activo
+                                </span>
+                            {% else %}
+                            <span class="badge bg-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Inactivo
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="/usuarios/edit/{{ usuario.id }}" class="btn btn-primary btn-sm me-1">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            {% if usuario.activo %}
+                            <a href="/usuarios/delete/{{ usuario.id }}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('¿Seguro que quieres inactivar este usuario?');">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                            {% else %}
+                            <a href="/usuarios/activar/{{ usuario.id }}" class="btn btn-success btn-sm"
+                               onclick="return confirm('¿Quieres activar este usuario nuevamente?');">
+                                <i class="bi bi-check-circle"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            No hay usuarios registrados
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Total: {{ usuarios|length }} usuarios</small>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                            <li class="page-item active"><span class="page-link">1</span></li>
+                            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
