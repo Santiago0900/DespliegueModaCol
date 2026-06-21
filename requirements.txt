@@ -20,5 +20,6 @@ six==1.17.0
 sqlparse==0.5.5
 typing_extensions==4.15.0
 tzdata==2025.3
-dj-database-url==3.0.1gunicorn==24.0.0
+dj-database-url==3.0.1
+gunicorn==24.0.0
 whitenoise==6.12.0
