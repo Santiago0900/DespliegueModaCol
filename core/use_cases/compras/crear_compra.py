@@ -1,5 +1,7 @@
 from core.domain.entities.compra import Compra
 from core.domain.entities.detalle_compra import DetalleCompra
+from core.use_cases.flujo_caja.registrar_egreso_compra import RegistrarEgresoCompraUseCase
+from infrastructure.persistence.repositories.django_flujo_caja_repository import DjangoFlujoCajaRepository
 
 
 class CrearCompraUseCase:
@@ -27,4 +29,13 @@ class CrearCompraUseCase:
             detalles=detalles,
             activo=data.get("activo", True),
         )
-        return self.repository.crear(compra)
+        created_compra = self.repository.crear(compra)
+
+        # Registrar egreso en flujo de caja cuando aplique
+        try:
+            RegistrarEgresoCompraUseCase(DjangoFlujoCajaRepository()).execute(created_compra)
+        except Exception:
+            # No queremos que la creación de la compra falle por errores al registrar el egreso
+            pass
+
+        return created_compra
